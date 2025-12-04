@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  react-app:
+    build:
+      context: .
+      target: development
+    ports:
+      - "3000:3000"
+    volumes:
+      # Mount source code for HMR
+      - ./src:/app/src
+      - ./public:/app/public
+      - ./index.html:/app/index.html
+      - ./vite.config.ts:/app/vite.config.ts
+      # Preserve node_modules in container
+      - /app/node_modules
+    environment:
+      - VITE_HMR_HOST=localhost
+      - VITE_HMR_PORT=3000
+    stdin_open: true
+    tty: true
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
