@@ -9,6 +9,7 @@ import {
   Copy,
   LogOut,
   ChevronDown,
+  Palette,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -54,14 +55,20 @@ export function AppSidebar() {
     },
   ];
 
+  const getPublicPageUrl = () => {
+    const baseUrl = import.meta.env.VITE_BOOKING_APP_URL || 'http://localhost:3001';
+    const handle = user?.handle || user?.username || 'user';
+    return `${baseUrl}/${handle}/book`;
+  };
+
   const handleCopyPublicLink = () => {
-    const publicUrl = `https://trainer.app/${user?.username || 'user'}`;
+    const publicUrl = getPublicPageUrl();
     navigator.clipboard.writeText(publicUrl);
     toast.success('Public page link copied to clipboard');
   };
 
   const handleViewPublicPage = () => {
-    const publicUrl = `https://trainer.app/${user?.username || 'user'}`;
+    const publicUrl = getPublicPageUrl();
     window.open(publicUrl, '_blank');
   };
 
@@ -101,6 +108,12 @@ export function AppSidebar() {
               <Link to="/profile/general" className="flex items-center gap-2">
                 <Settings className="h-4 w-4" />
                 Settings
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to="/branding" className="flex items-center gap-2">
+                <Palette className="h-4 w-4" />
+                Branding
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />

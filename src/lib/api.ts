@@ -28,6 +28,7 @@ export async function fetchWithAuth(
 
   // Add auth header if token exists
   const headers: Record<string, string> = {
+    Accept: 'application/json',
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
     ...options.headers,
   };

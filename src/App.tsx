@@ -14,6 +14,7 @@ import { AvailabilityPage } from './pages/AvailabilityPage';
 import { AvailabilityEditPage } from './pages/AvailabilityEditPage';
 import { BookingDetailPage } from './pages/BookingDetailPage';
 import { ProfilePage } from './pages/ProfilePage';
+import { BrandingPage } from './pages/BrandingPage';
 
 // Auth flow wrapper component
 function AuthFlow() {
@@ -125,6 +126,16 @@ function AppContent() {
         element={
           <ProtectedRoute>
             <ProfilePage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Branding page - standalone without AppLayout */}
+      <Route
+        path="/branding"
+        element={
+          <ProtectedRoute>
+            <BrandingPage />
           </ProtectedRoute>
         }
       />

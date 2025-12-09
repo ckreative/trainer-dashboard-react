@@ -9,6 +9,7 @@ export interface User {
   firstName: string;
   lastName: string;
   username: string;
+  handle: string | null;
   avatarUrl: string | null;
   timezone: string;
   role: string;
