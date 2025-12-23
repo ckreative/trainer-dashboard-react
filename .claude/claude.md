@@ -12,6 +12,23 @@ You have Chrome DevTools MCP access. Use it EVERY TIME you make frontend changes
 
 **DO NOT ask the user to check things you can verify yourself!**
 
+## E2E Testing Requirements
+
+**Before confirming ANY issue is resolved, you MUST perform E2E testing using Chrome DevTools MCP:**
+
+1. **Navigate to the affected page** - Use `mcp__chrome-devtools__navigate_page` to load the page
+2. **Take a snapshot** - Use `mcp__chrome-devtools__take_snapshot` to verify page structure
+3. **Take a screenshot** - Use `mcp__chrome-devtools__take_screenshot` to verify visual appearance
+4. **Test the functionality** - Use click, fill, and other actions to test the feature works
+5. **Check for errors** - Use `mcp__chrome-devtools__list_console_messages` to verify no errors
+6. **Verify network requests** - Use `mcp__chrome-devtools__list_network_requests` if API calls are involved
+
+**An issue is NOT resolved until you have:**
+- Visually confirmed the fix via screenshot
+- Tested the user flow works end-to-end
+- Verified no console errors exist
+- Confirmed network requests succeed (if applicable)
+
 ## UI Verification Workflow
 
 When working on UI changes, layout fixes, or visual improvements, follow this strict verification workflow:
@@ -82,14 +99,21 @@ User Request: "Fix horizontal scrolling on product page"
 11. ✅ NOW mark as complete
 ```
 
-## Commands for Browser MCP
+## Commands for Chrome DevTools MCP
 
-When Chrome MCP is available, use commands like:
-- `mcp__chrome__navigate` - Navigate to a URL
-- `mcp__chrome__screenshot` - Take a screenshot
-- `mcp__chrome__click` - Click elements
-- `mcp__chrome__scroll` - Test scrolling behavior
-- `mcp__chrome__viewport` - Change viewport size
+When Chrome DevTools MCP is available, use these tools:
+- `mcp__chrome-devtools__navigate_page` - Navigate to a URL or reload
+- `mcp__chrome-devtools__take_screenshot` - Take a screenshot of the page
+- `mcp__chrome-devtools__take_snapshot` - Get page structure/accessibility tree
+- `mcp__chrome-devtools__click` - Click elements by uid
+- `mcp__chrome-devtools__fill` - Fill input fields
+- `mcp__chrome-devtools__fill_form` - Fill multiple form fields at once
+- `mcp__chrome-devtools__hover` - Hover over elements
+- `mcp__chrome-devtools__press_key` - Press keyboard keys
+- `mcp__chrome-devtools__list_console_messages` - Check for console errors
+- `mcp__chrome-devtools__list_network_requests` - Verify API calls
+- `mcp__chrome-devtools__resize_page` - Test different viewport sizes
+- `mcp__chrome-devtools__wait_for` - Wait for text to appear on page
 
 ## Never Skip Verification
 
