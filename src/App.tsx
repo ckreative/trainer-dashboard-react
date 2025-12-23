@@ -11,10 +11,12 @@ import { EventTypesPage } from './pages/EventTypesPage';
 import { EventTypeEditPage } from './pages/EventTypeEditPage';
 import { BookingsPage } from './pages/BookingsPage';
 import { AvailabilityPage } from './pages/AvailabilityPage';
+import { AvailabilityCreatePage } from './pages/AvailabilityCreatePage';
 import { AvailabilityEditPage } from './pages/AvailabilityEditPage';
 import { BookingDetailPage } from './pages/BookingDetailPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { BrandingPage } from './pages/BrandingPage';
+import { SetupAccountPage } from './pages/SetupAccountPage';
 
 // Auth flow wrapper component
 function AuthFlow() {
@@ -65,6 +67,12 @@ function AppContent() {
         element={isAuthenticated ? <Navigate to="/event-types" replace /> : <AuthFlow />}
       />
 
+      {/* Setup account route - for accepting invitations */}
+      <Route
+        path="/setup/:token"
+        element={isAuthenticated ? <Navigate to="/event-types" replace /> : <SetupAccountPage />}
+      />
+
       {/* Protected routes with AppLayout */}
       <Route
         element={
@@ -80,7 +88,7 @@ function AppContent() {
         <Route path="/event-types" element={<EventTypesPage />} />
         <Route path="/bookings" element={<BookingsPage />} />
         <Route path="/availability" element={<AvailabilityPage />} />
-        <Route path="/availability/new" element={<div>New Availability - Coming Soon</div>} />
+        <Route path="/availability/new" element={<AvailabilityCreatePage />} />
         <Route path="/availability/:id" element={<AvailabilityEditPage />} />
       </Route>
 
