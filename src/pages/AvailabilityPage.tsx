@@ -74,11 +74,43 @@ export function AvailabilityPage() {
     const enabledDays = schedule.schedule.filter((d) => d.enabled);
     if (enabledDays.length === 0) return 'No availability set';
 
-    const dayNames = enabledDays.map((d) => d.day.slice(0, 3)).join(', ');
-    const firstSlot = enabledDays[0]?.slots[0];
-    if (!firstSlot) return dayNames;
+    // Group days by their time signature (slots stringified)
+    const getTimeSignature = (slots: { start: string; end: string }[]) =>
+      slots.map((s) => `${s.start}-${s.end}`).sort().join(', ');
 
-    return `${dayNames}, ${firstSlot.start} - ${firstSlot.end}`;
+    const dayAbbr: Record<string, string> = {
+      Sunday: 'Sun', Monday: 'Mon', Tuesday: 'Tue', Wednesday: 'Wed',
+      Thursday: 'Thu', Friday: 'Fri', Saturday: 'Sat',
+    };
+
+    // Group days by time signature
+    const groups = new Map<string, { days: string[]; slots: { start: string; end: string }[] }>();
+    enabledDays.forEach((day) => {
+      const sig = getTimeSignature(day.slots);
+      if (!groups.has(sig)) {
+        groups.set(sig, { days: [], slots: day.slots });
+      }
+      groups.get(sig)!.days.push(day.day);
+    });
+
+    // Format time as 12h (9:00am)
+    const formatTime = (time: string) => {
+      const [hourStr, minute] = time.split(':');
+      const hour = parseInt(hourStr, 10);
+      const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+      const period = hour < 12 ? 'am' : 'pm';
+      return `${displayHour}:${minute}${period}`;
+    };
+
+    // Build summary parts
+    const parts: string[] = [];
+    groups.forEach(({ days, slots }) => {
+      const dayStr = days.map((d) => dayAbbr[d]).join(', ');
+      const timeStr = slots.map((s) => `${formatTime(s.start)}-${formatTime(s.end)}`).join(', ');
+      parts.push(`${dayStr}: ${timeStr}`);
+    });
+
+    return parts.join(' | ');
   };
 
   if (isLoading) {

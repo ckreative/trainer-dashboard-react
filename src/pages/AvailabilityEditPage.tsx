@@ -28,7 +28,6 @@ import { DayScheduleRow } from '@/components/availability/DayScheduleRow';
 import { CopyScheduleModal } from '@/components/availability/CopyScheduleModal';
 import { DateOverridesSection } from '@/components/availability/DateOverridesSection';
 import { DateOverrideModal } from '@/components/availability/DateOverrideModal';
-import { formatTimeFor12h } from '@/components/availability/TimeSlotInput';
 import type { AvailabilitySchedule, DaySchedule, DateOverride, TimeSlot } from '@/types/availability';
 import { toast } from 'sonner';
 
@@ -64,69 +63,6 @@ const DEFAULT_SCHEDULE: DaySchedule[] = DAYS_OF_WEEK.map((day) => ({
     ? [{ start: '09:00', end: '17:00' }]
     : [],
 }));
-
-// Generate schedule summary (e.g., "Mon - Fri, 9:00am - 5:00pm")
-function generateScheduleSummary(schedule: DaySchedule[]): string {
-  const enabledDays = schedule.filter((d) => d.enabled);
-  if (enabledDays.length === 0) return 'No availability set';
-
-  // Get day abbreviations
-  const dayAbbr: Record<string, string> = {
-    Sunday: 'Sun',
-    Monday: 'Mon',
-    Tuesday: 'Tue',
-    Wednesday: 'Wed',
-    Thursday: 'Thu',
-    Friday: 'Fri',
-    Saturday: 'Sat',
-  };
-
-  // Find consecutive day ranges
-  const dayIndices = enabledDays.map((d) => DAYS_OF_WEEK.indexOf(d.day)).sort((a, b) => a - b);
-
-  // Build day string
-  let dayString = '';
-  if (dayIndices.length === 7) {
-    dayString = 'Every day';
-  } else if (dayIndices.length === 5 && !dayIndices.includes(0) && !dayIndices.includes(6)) {
-    dayString = 'Mon - Fri';
-  } else if (dayIndices.length === 2 && dayIndices.includes(0) && dayIndices.includes(6)) {
-    dayString = 'Weekends';
-  } else {
-    dayString = enabledDays.map((d) => dayAbbr[d.day]).join(', ');
-  }
-
-  // Get time signature for each day (stringify slots for comparison)
-  const getTimeSignature = (day: DaySchedule) =>
-    day.slots.map(s => `${s.start}-${s.end}`).sort().join(',');
-
-  // Count how many days share each time signature
-  const signatureCounts = new Map<string, { count: number; slots: typeof enabledDays[0]['slots'] }>();
-  enabledDays.forEach((day) => {
-    const sig = getTimeSignature(day);
-    if (!signatureCounts.has(sig)) {
-      signatureCounts.set(sig, { count: 0, slots: day.slots });
-    }
-    signatureCounts.get(sig)!.count++;
-  });
-
-  // Find the most common time signature
-  let mostCommonSlots = enabledDays[0].slots;
-  let maxCount = 0;
-  signatureCounts.forEach(({ count, slots }) => {
-    if (count > maxCount) {
-      maxCount = count;
-      mostCommonSlots = slots;
-    }
-  });
-
-  // Build time string from most common slots
-  const timeString = mostCommonSlots
-    .map((slot) => `${formatTimeFor12h(slot.start)} - ${formatTimeFor12h(slot.end)}`)
-    .join(', ');
-
-  return `${dayString}, ${timeString}`;
-}
 
 export function AvailabilityEditPage() {
   const { id } = useParams();
@@ -342,8 +278,6 @@ export function AvailabilityEditPage() {
     );
   }
 
-  const scheduleSummary = generateScheduleSummary(weeklyHours);
-
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -387,7 +321,6 @@ export function AvailabilityEditPage() {
                   </>
                 )}
               </div>
-              <p className="text-sm text-muted-foreground mt-0.5">{scheduleSummary}</p>
             </div>
 
             {/* Right side: Actions */}

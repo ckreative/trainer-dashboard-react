@@ -43,7 +43,7 @@ class AuthService {
   async login(email: string, password: string): Promise<LoginResponse> {
     const response = await fetchWithAuth(`${API_BASE_URL}/api/auth/login`, {
       method: 'POST',
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email, password, app: 'dashboard' }),
     });
 
     const data = await handleApiResponse<LoginResponse>(response);
@@ -108,6 +108,38 @@ class AuthService {
 
   isAuthenticated(): boolean {
     return this.getAuthToken() !== null;
+  }
+
+  async validateInvitation(token: string): Promise<{
+    valid: boolean;
+    email: string;
+    firstName: string;
+    lastName: string;
+    expiresAt: string;
+  }> {
+    const response = await fetchWithAuth(`${API_BASE_URL}/api/invitations/${token}`, {
+      method: 'GET',
+    });
+
+    return handleApiResponse(response);
+  }
+
+  async acceptInvitation(
+    token: string,
+    password: string,
+    passwordConfirmation: string
+  ): Promise<LoginResponse> {
+    const response = await fetchWithAuth(`${API_BASE_URL}/api/invitations/${token}/accept`, {
+      method: 'POST',
+      body: JSON.stringify({
+        password,
+        password_confirmation: passwordConfirmation,
+      }),
+    });
+
+    const data = await handleApiResponse<LoginResponse>(response);
+    this.setAuthToken(data.accessToken);
+    return data;
   }
 }
 
