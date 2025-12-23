@@ -9,6 +9,12 @@ export interface DaySchedule {
   slots: TimeSlot[];
 }
 
+export interface DateOverride {
+  date: string; // YYYY-MM-DD format
+  type: 'available' | 'unavailable';
+  slots?: TimeSlot[]; // Required when type is 'available'
+}
+
 export interface AvailabilitySchedule {
   id: string;
   userId: string;
@@ -16,6 +22,7 @@ export interface AvailabilitySchedule {
   isDefault: boolean;
   timezone: string;
   schedule: DaySchedule[];
+  dateOverrides: DateOverride[];
   eventTypeCount: number;
   createdAt: string;
   updatedAt: string;
@@ -25,6 +32,7 @@ export interface CreateAvailabilityScheduleData {
   name: string;
   timezone: string;
   schedule: DaySchedule[];
+  dateOverrides?: DateOverride[];
   isDefault?: boolean;
 }
 
