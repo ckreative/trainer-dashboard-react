@@ -459,7 +459,7 @@ export function EventTypeEditPage() {
             </span>
           </div>
           <Link
-            to="/availability"
+            to={selectedSchedule ? `/availability/${selectedSchedule.id}?returnTo=/event-types/${id}/availability` : '/availability'}
             className="text-sm text-primary hover:underline"
           >
             Edit availability

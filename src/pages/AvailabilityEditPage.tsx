@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -116,6 +116,8 @@ function generateScheduleSummary(schedule: DaySchedule[]): string {
 export function AvailabilityEditPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const returnTo = searchParams.get('returnTo');
 
   // Form state
   const [schedule, setSchedule] = useState<AvailabilitySchedule | null>(null);
@@ -201,7 +203,7 @@ export function AvailabilityEditPage() {
         dateOverrides,
       });
       toast.success('Schedule saved');
-      navigate('/availability');
+      navigate(returnTo || '/availability');
     } catch (error) {
       console.error('Failed to save schedule:', error);
       toast.error('Failed to save schedule');
@@ -230,7 +232,7 @@ export function AvailabilityEditPage() {
     try {
       await availabilityService.delete(id);
       toast.success('Schedule deleted');
-      navigate('/availability');
+      navigate(returnTo || '/availability');
     } catch (error: any) {
       console.error('Failed to delete schedule:', error);
       if (error.message?.includes('default')) {
@@ -336,7 +338,7 @@ export function AvailabilityEditPage() {
             {/* Left side: Back link, Name, Summary */}
             <div className="min-w-0">
               <Link
-                to="/availability"
+                to={returnTo || '/availability'}
                 className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground gap-1 mb-2"
               >
                 <ArrowLeft className="h-3.5 w-3.5" />
