@@ -65,7 +65,7 @@ const DEFAULT_SCHEDULE: DaySchedule[] = DAYS_OF_WEEK.map((day) => ({
     : [],
 }));
 
-// Generate schedule summary (e.g., "Mon - Fri, 9:00 AM - 5:00 PM")
+// Generate schedule summary (e.g., "Mon - Fri, 9:00am - 5:00pm")
 function generateScheduleSummary(schedule: DaySchedule[]): string {
   const enabledDays = schedule.filter((d) => d.enabled);
   if (enabledDays.length === 0) return 'No availability set';
@@ -84,14 +84,6 @@ function generateScheduleSummary(schedule: DaySchedule[]): string {
   // Find consecutive day ranges
   const dayIndices = enabledDays.map((d) => DAYS_OF_WEEK.indexOf(d.day)).sort((a, b) => a - b);
 
-  // Get unique time ranges
-  const timeRanges = new Set<string>();
-  enabledDays.forEach((day) => {
-    day.slots.forEach((slot) => {
-      timeRanges.add(`${formatTimeFor12h(slot.start)} - ${formatTimeFor12h(slot.end)}`);
-    });
-  });
-
   // Build day string
   let dayString = '';
   if (dayIndices.length === 7) {
@@ -104,11 +96,34 @@ function generateScheduleSummary(schedule: DaySchedule[]): string {
     dayString = enabledDays.map((d) => dayAbbr[d.day]).join(', ');
   }
 
-  // Build time string
-  const timeString = Array.from(timeRanges).slice(0, 2).join(', ');
-  if (timeRanges.size > 2) {
-    return `${dayString}, ${timeString}...`;
-  }
+  // Get time signature for each day (stringify slots for comparison)
+  const getTimeSignature = (day: DaySchedule) =>
+    day.slots.map(s => `${s.start}-${s.end}`).sort().join(',');
+
+  // Count how many days share each time signature
+  const signatureCounts = new Map<string, { count: number; slots: typeof enabledDays[0]['slots'] }>();
+  enabledDays.forEach((day) => {
+    const sig = getTimeSignature(day);
+    if (!signatureCounts.has(sig)) {
+      signatureCounts.set(sig, { count: 0, slots: day.slots });
+    }
+    signatureCounts.get(sig)!.count++;
+  });
+
+  // Find the most common time signature
+  let mostCommonSlots = enabledDays[0].slots;
+  let maxCount = 0;
+  signatureCounts.forEach(({ count, slots }) => {
+    if (count > maxCount) {
+      maxCount = count;
+      mostCommonSlots = slots;
+    }
+  });
+
+  // Build time string from most common slots
+  const timeString = mostCommonSlots
+    .map((slot) => `${formatTimeFor12h(slot.start)} - ${formatTimeFor12h(slot.end)}`)
+    .join(', ');
 
   return `${dayString}, ${timeString}`;
 }
