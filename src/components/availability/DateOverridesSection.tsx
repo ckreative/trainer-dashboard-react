@@ -53,7 +53,7 @@ export function DateOverridesSection({
   const sortedOverrides = [...overrides].sort((a, b) => a.date.localeCompare(b.date));
 
   return (
-    <Card className="mt-6">
+    <Card style={{ marginTop: '24px' }}>
       <CardHeader className="pb-4 pt-6 px-6 space-y-1">
         <div className="flex items-center gap-2">
           <CardTitle className="text-base font-semibold">Date overrides</CardTitle>
